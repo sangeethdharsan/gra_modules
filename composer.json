@@ -1,0 +1,13 @@
+{
+    "name": "gra/test",
+    "description": "A simple Composer project",
+    "require": {
+        "monolog/monolog": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "MyVendor\\MyPackage\\": "src/"
+        }
+    }
+}
+
