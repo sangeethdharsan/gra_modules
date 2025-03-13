@@ -1,5 +1,5 @@
 {
-    "name": "bitbucket/pipelines-php",
+    "name": "gratest/codingstandard-php",
     "description": "Magento-coding-standard",
     "type": "project",
     "autoload": {
