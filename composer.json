@@ -1,12 +1,39 @@
 {
-    "name": "gra/test",
-    "description": "A simple Composer project",
-    "require": {
-        "monolog/monolog": "^3.0"
-    },
+    "name": "bitbucket/pipelines-php",
+    "description": "Magento-coding-standard",
+    "type": "project",
     "autoload": {
-        "psr-4": {
-            "MyVendor\\MyPackage\\": "src/"
+        "classmap": [
+            "src/"
+        ]
+    },
+    "require-dev": {
+          "allure-framework/allure-phpunit": "~1.5.0",
+        "friendsofphp/php-cs-fixer": "*",
+        "lusitanian/oauth": "~0.8.10",
+        "magento/magento-coding-standard": "*",
+        "pdepend/pdepend": "~2.10.0",
+        "phpmd/phpmd": "^2.12.0",
+        "phpstan/phpstan": "^1.6.8",
+        "phpunit/phpunit": "~9.5.20",
+        "sebastian/phpcpd": "^6.0.3",
+        "symfony/finder": "^5.2",
+        "squizlabs/php_codesniffer": "*"
+    },
+    "scripts": {
+    "post-install-cmd": [
+      "([ $COMPOSER_DEV_MODE -eq 0 ] || vendor/bin/phpcs --config-set installed_paths ../../magento/magento-coding-standard/,../../phpcompatibility/php-compatibility,../../magento/php-compatibility-fork,../../phpcsstandards/phpcsutils)"
+    ],
+    "post-update-cmd": [
+      "([ $COMPOSER_DEV_MODE -eq 0 ] || vendor/bin/phpcs --config-set installed_paths ../../magento/magento-coding-standard/,../../phpcompatibility/php-compatibility,../../magento/php-compatibility-fork,../../phpcsstandards/phpcsutils)"
+    ]
+},
+    "require": {
+        "launchdarkly/server-sdk": "^6.4"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     }
 }
