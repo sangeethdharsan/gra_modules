@@ -21,7 +21,7 @@ jobs:
           # Add your deployment script here
           echo "Deploying gra-modules..."
 
-  trigger-parent:
+  Trigger-parent:
     needs: deploy
     runs-on: ubuntu-latest
 
@@ -30,12 +30,20 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            await github.rest.actions.createWorkflowDispatch({
-              owner: 'sangeethdharsan',  # Replace with the parent repository's owner
-              repo: 'gra_2',   # Replace with the parent repository's name
-              workflow_id: 'update-from-child.yml',  # Name of the workflow in the parent repository
-              ref: 'test',  # Branch where the workflow is defined in the parent repository
+            const { owner, repo, workflow_id, ref, inputs } = {
+              owner: 'sangeethdharsan',  // Replace with the parent repository's owner
+              repo: 'gra_2',   // Replace with the parent repository's name
+              workflow_id: 'update-from-child.yml',  // Name of the workflow in the parent repository
+              ref: 'test',  // Branch where the workflow is defined in the parent repository
               inputs: {
-                'child-commit-id': '${{ github.sha }}'  # Pass the commit ID of the child repository
+                'child-commit-id': '${{ github.sha }}'  // Pass the commit ID of the child repository
               }
+            };
+
+            await github.rest.actions.createWorkflowDispatch({
+              owner,
+              repo,
+              workflow_id,
+              ref,
+              inputs
             });
