@@ -1,0 +1,31 @@
+name: Deploy Child Repository
+
+on:
+  push:
+    branches:
+      - testing-gra
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: composer install
+
+      - name: Run deployment script
+        run: |
+            # Add your deployment script here
+            echo "Deploying gra-modules..."
+
+            # Check composer.json for changes
+            echo "Checking composer.json for changes..."
+               if git diff --exit-code composer.json; then
+            echo "No changes detected in composer.json."
+               else
+            echo "Changes detected in composer.json:"
+                git diff composer.json
+            fi
