@@ -17,7 +17,8 @@
         "phpstan/phpstan": "^1.6.8",
         "phpunit/phpunit": "~9.5.20",
         "sebastian/phpcpd": "^6.0.3",
-        "squizlabs/php_codesniffer": "*"
+        "squizlabs/php_codesniffer": "*",
+        "mockery/mockery": "^1.6"
     },
     "scripts": {
     "post-install-cmd": [
