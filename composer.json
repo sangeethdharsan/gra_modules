@@ -17,7 +17,6 @@
         "phpstan/phpstan": "^1.6.8",
         "phpunit/phpunit": "~9.5.20",
         "sebastian/phpcpd": "^6.0.3",
-        "symfony/finder": "^5.2",
         "squizlabs/php_codesniffer": "*"
     },
     "scripts": {
@@ -29,7 +28,9 @@
     ]
 },
     "require": {
-        "launchdarkly/server-sdk": "^6.4"
+        "launchdarkly/server-sdk": "^6.4",
+        "symfony/finder": "*",
+        "guzzlehttp/guzzle": "^7.9"
     },
     "config": {
         "allow-plugins": {
@@ -37,4 +38,3 @@
         }
     }
 }
-
