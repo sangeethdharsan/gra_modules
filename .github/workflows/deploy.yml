@@ -1,17 +1,17 @@
-name: Trigger Workflow on Push
+name: Trigger Specific Workflow in Another Repo
 on:
   push:
     branches:
-      - main
-      - testing-gra  
+      - main  
+      - testing-gra
 jobs:
   trigger-target-workflow:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger repository_dispatch event in target repo
+      - name: Trigger workflow_dispatch in target repo
         run: |
           curl -X POST \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ secrets.PAT }}" \
-          https://api.github.com/repos/sangeethdharsan/gra_2/dispatches \
-          -d '{"event_type":"push_trigger", "client_payload": {"source_repo":"${{ github.repository }}", "commit_sha":"${{ github.sha }}"}}'
+          https://api.github.com/repos/sangeethdharsan/gra_2/actions/workflows/dispatch-workflow.yml.yml/dispatches \
+          -d '{"ref":"test"}'
