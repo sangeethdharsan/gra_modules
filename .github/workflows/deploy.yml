@@ -8,6 +8,12 @@ jobs:
   trigger-target-workflow:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: composer install
+
       - name: Trigger workflow_dispatch in target repo
         run: |
           curl -X POST \
