@@ -27,6 +27,11 @@ jobs:
           repository: sangeethdharsan/gra_2 # Replace with your target repo
           path: gra_2
           token: ${{ secrets.PAT }}
+        
+      - name: Install Composer Dependencies in Target Repository
+        run: |
+          cd gra_2
+          composer install --no-interaction --no-progress --no-suggest    
 
       - name: Update Composer Lock
         run: |
