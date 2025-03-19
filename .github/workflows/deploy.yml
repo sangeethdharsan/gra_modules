@@ -32,6 +32,7 @@ jobs:
       - name: Install Composer Dependencies in Target Repository
         run: |
           cd gra_2
+          composer config repositories.gra_modules '{"type": "vcs", "url": "https://github.com/sangeethdharsan/gra_modules.git", "branch": "testing-gra"}'
           composer install --no-interaction --no-progress --no-suggest    
 
       - name: Update Composer Lock
