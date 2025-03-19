@@ -1,23 +1,40 @@
-name: Trigger Specific Workflow in Another Repo
+name: Update Composer Lock in Target Repository
+
 on:
   push:
     branches:
       - main  
       - testing-gra
+
 jobs:
-  trigger-target-workflow:
+  update-composer-lock:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: Checkout Child Repository
         uses: actions/checkout@v3
+        with:
+          repository: sangeethdharsan/gra_modules  # Replace with your child repo
+          ref: ${{ github.sha }}  # Use the commit SHA that triggered the workflow
 
-      - name: Install dependencies
-        run: composer install
+      - name: Get Commit SHA
+        id: get-commit-sha
+        run: echo "COMMIT_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
-      - name: Trigger workflow_dispatch in target repo
+      - name: Checkout Target Repository
+        uses: actions/checkout@v3
+        with:
+          repository: sangeethdharsan/gra_2 # Replace with your target repo
+          path: target-repo
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update Composer Lock
         run: |
-          curl -X POST \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{ secrets.PAT }}" \
-          https://api.github.com/repos/sangeethdharsan/gra_2/actions/workflows/dispatch-workflow.yml.yml/dispatches \
-          -d '{"ref":"test"}'
+          cd target-repo
+          composer config repositories.gra_modules '{"type": "vcs", "url": "https://github.com/sangeethdharsan/gra_2.git", "branch": "testing-gra"}'
+          composer update --lock
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add composer.lock
+          git commit -m "Update composer.lock with child-repo commit ${{ env.COMMIT_SHA }}"
+          git push origin test  # Replace with the target branch if not main
