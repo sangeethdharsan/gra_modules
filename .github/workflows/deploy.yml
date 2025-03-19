@@ -24,13 +24,13 @@ jobs:
       - name: Checkout Target Repository
         uses: actions/checkout@v3
         with:
-          repository: sangeethdharsan/gra_modules # Replace with your target repo
+          repository: sangeethdharsan/gra_2 # Replace with your target repo
           path: gra_2
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update Composer Lock
         run: |
-          cd target-repo
+          cd gra_2
           composer config repositories.gra_modules '{"type": "vcs", "url": "https://github.com/sangeethdharsan/gra_modules.git", "branch": "testing-gra"}'
           composer update --lock
           git config --global user.name "GitHub Actions"
