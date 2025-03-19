@@ -1,49 +1,56 @@
-name: Update Composer Lock in Target Repository
+name: Update Composer Lock in gra_2 with gra_modules Commit
 
 on:
   push:
     branches:
-      - main  
-      - testing-gra
+      - main
+      - testing-gra  # Trigger on push to the main branch of gra_modules
 
 jobs:
-  updating-composer-lock:
+  update-composer-lock:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Child Repository
+      # Step 1: Checkout gra_modules repository
+      - name: Checkout gra_modules Repository
         uses: actions/checkout@v3
         with:
-          repository: sangeethdharsan/gra_modules  # Replace with your child repo
-          ref: ${{ github.sha }}  # Use the commit SHA that triggered the workflow
+          repository: sangeethdharsan/gra_modules  # Replace with your gra_modules repo
+          token: ${{ secrets.PAT }}  # Use PAT for private repos
+          ref: testing-gra  # Specify the branch explicitly
 
+      # Step 2: Get the commit SHA of gra_modules
       - name: Get Commit SHA
         id: get-commit-sha
         run: echo "COMMIT_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
-      - name: Checkout Target Repository
+      # Step 3: Checkout gra_2 repository
+      - name: Checkout gra_2 Repository
         uses: actions/checkout@v3
         with:
-          repository: sangeethdharsan/gra_2 # Replace with your target repo
+          repository: sangeethdharsan/gra_2  # Replace with your gra_2 repo
           path: gra_2
-          token: ${{ secrets.PAT }}
-          ref: test
-          
-      - name: Install Composer Dependencies in Target Repository
+          token: ${{ secrets.PAT }}  # Use PAT for private repos
+          ref: test  # Specify the branch explicitly
+
+      # Step 4: Update composer.json in gra_2 to reference the latest commit from gra_modules
+      - name: Update composer.json in gra_2
         run: |
           cd gra_2
-          composer config repositories.gra_modules '{"type": "vcs", "url": "https://github.com/sangeethdharsan/gra_modules.git", "branch": "testing-gra"}'
-          composer install --no-interaction --no-progress --no-suggest    
+          composer config repositories.gra_modules '{"type": "git", "url": "https://github.com/sangeethdharsan/gra_modules.git", "reference": "${{ env.COMMIT_SHA }}"}'
 
+      # Step 5: Update composer.lock in gra_2
       - name: Update Composer Lock
         run: |
           cd gra_2
-          git branch -a 
-          ls -ltrh
-          composer config repositories.gra_modules '{"type": "vcs", "url": "https://github.com/sangeethdharsan/gra_modules.git", "branch": "testing-gra"}'
-          composer update --lock
+          composer update gratest/codingstandard-php --with-all-dependencies
+
+      # Step 6: Commit and push changes to gra_2
+      - name: Commit and Push Changes
+        run: |
+          cd gra_2
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git add composer.lock composer.json
-          git commit -m "Update composer.lock with child-repo commit ${{ env.COMMIT_SHA }}"
-          git push origin test  # Replace with the target branch if not main
+          git add composer.lock
+          git commit -m "Update composer.lock with gra_modules commit ${{ env.COMMIT_SHA }}"
+          git push origin test  # Push to the 'main' branch of gra_2
