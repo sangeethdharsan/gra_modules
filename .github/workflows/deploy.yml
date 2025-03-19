@@ -24,7 +24,7 @@ jobs:
       - name: Checkout Target Repository
         uses: actions/checkout@v3
         with:
-          repository: https://github.com/sangeethdharsan/gra_modules.git # Replace with your target repo
+          repository: sangeethdharsan/gra_modules # Replace with your target repo
           path: gra_2
           token: ${{ secrets.GITHUB_TOKEN }}
 
