@@ -26,24 +26,36 @@ jobs:
         with:
           repository: sangeethdharsan/gra_2 # Replace with your target repo
           path: gra_2
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.PAT }}  # Ensure this has the correct permissions
           ref: test
           
       - name: Install Composer Dependencies in Target Repository
         run: |
           cd gra_2
+          composer clear-cache
           composer config repositories.gra_modules '{"type": "vcs", "url": "https://github.com/sangeethdharsan/gra_modules.git", "branch": "testing-gra"}'
           composer install --no-interaction --no-progress --no-suggest    
+
+      - name: Force Composer to Recognize Changes
+        run: |
+          cd gra_2
+          composer update sangeethdharsan/gra_modules --with-dependencies
 
       - name: Update Composer Lock
         run: |
           cd gra_2
           git branch -a 
           ls -ltrh
-          composer config repositories.gra_modules '{"type": "vcs", "url": "https://github.com/sangeethdharsan/gra_modules.git", "branch": "testing-gra"}'
-          composer update --lock
+          composer update
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add composer.lock composer.json
-          git commit -m "Update composer.lock with child-repo commit ${{ env.COMMIT_SHA }}"
-          git push origin test  # Replace with the target branch if not main
+          git commit -m "Update composer.lock with child-repo commit ${{ env.COMMIT_SHA }}" || echo "No changes to commit"
+          git push origin test
+
+      - name: Debug Composer Lock Changes
+        run: |
+          cd gra_2
+          git status
+          git diff composer.lock || echo "No changes detected in composer.lock"
+
