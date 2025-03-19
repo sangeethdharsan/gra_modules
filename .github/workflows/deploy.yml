@@ -14,8 +14,8 @@ jobs:
       - name: Checkout Child Repository
         uses: actions/checkout@v3
         with:
-          repository: sangeethdharsan/gra_modules  
-          ref: ${{ github.sha }}
+          repository: sangeethdharsan/gra_modules  # Replace with your child repo
+          ref: ${{ github.sha }}  # Use the commit SHA that triggered the workflow
 
       - name: Get Commit SHA
         id: get-commit-sha
@@ -24,42 +24,26 @@ jobs:
       - name: Checkout Target Repository
         uses: actions/checkout@v3
         with:
-          repository: sangeethdharsan/gra_2  
+          repository: sangeethdharsan/gra_2 # Replace with your target repo
           path: gra_2
-          token: ${{ secrets.PAT }}  
+          token: ${{ secrets.PAT }}
           ref: test
           
-      - name: Ensure Correct Git Branch
+      - name: Install Composer Dependencies in Target Repository
         run: |
           cd gra_2
-          git checkout test
-          git pull origin test
-
-      - name: Install Composer Dependencies
-        run: |
-          cd gra_2
-          composer clear-cache
           composer config repositories.gra_modules '{"type": "vcs", "url": "https://github.com/sangeethdharsan/gra_modules.git", "branch": "testing-gra"}'
           composer install --no-interaction --no-progress --no-suggest    
 
-      - name: Force Composer to Update Dependencies
+      - name: Update Composer Lock
         run: |
           cd gra_2
-          composer require sangeethdharsan/gra_modules:dev-testing-gra --no-update
-          composer update sangeethdharsan/gra_modules --with-dependencies
-
-      - name: Debug Git Changes Before Commit
-        run: |
-          cd gra_2
-          git status
-          git diff composer.lock || echo "No changes detected in composer.lock"
-
-      - name: Commit and Push Changes
-        run: |
-          cd gra_2
+          git branch -a 
+          ls -ltrh
+          composer config repositories.gra_modules '{"type": "vcs", "url": "https://github.com/sangeethdharsan/gra_modules.git", "branch": "testing-gra"}'
+          composer update --lock
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add composer.lock composer.json
-          git commit -m "Update composer.lock with child-repo commit ${{ env.COMMIT_SHA }}" || echo "No changes to commit"
-          git push origin test
-
+          git commit -m "Update composer.lock with child-repo commit ${{ env.COMMIT_SHA }}"
+          git push origin test  # Replace with the target branch if not main
