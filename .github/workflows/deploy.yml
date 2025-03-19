@@ -39,11 +39,10 @@ jobs:
           cd gra_2
           git branch -a 
           ls -ltrh
-   #      git checkout test
-   #       composer config repositories.gra_modules '{"type": "vcs", "url": "https://github.com/sangeethdharsan/gra_modules.git", "branch": "testing-gra"}'
-   #       composer update --lock
-   #       git config --global user.name "GitHub Actions"
-   #       git config --global user.email "actions@github.com"
-   #       git add composer.lock
-   #       git commit -m "Update composer.lock with child-repo commit ${{ env.COMMIT_SHA }}"
-   #       git push origin test  # Replace with the target branch if not main
+          composer config repositories.gra_modules '{"type": "vcs", "url": "https://github.com/sangeethdharsan/gra_modules.git", "branch": "testing-gra"}'
+          composer update --lock
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add composer.lock
+          git commit -m "Update composer.lock with child-repo commit ${{ env.COMMIT_SHA }}"
+          git push origin test  # Replace with the target branch if not main
