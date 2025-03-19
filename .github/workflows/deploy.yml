@@ -29,6 +29,12 @@ jobs:
           token: ${{ secrets.PAT }}  
           ref: test
           
+      - name: Ensure Correct Git Branch
+        run: |
+          cd gra_2
+          git checkout test
+          git pull origin test
+
       - name: Install Composer Dependencies
         run: |
           cd gra_2
@@ -42,7 +48,7 @@ jobs:
           composer require sangeethdharsan/gra_modules:dev-testing-gra --no-update
           composer update sangeethdharsan/gra_modules --with-dependencies
 
-      - name: Debug Composer Lock Changes
+      - name: Debug Git Changes Before Commit
         run: |
           cd gra_2
           git status
