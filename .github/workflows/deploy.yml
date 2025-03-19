@@ -36,6 +36,7 @@ jobs:
       - name: Update Composer Lock
         run: |
           cd gra_2
+          git checkout test
           composer config repositories.gra_modules '{"type": "vcs", "url": "https://github.com/sangeethdharsan/gra_modules.git", "branch": "testing-gra"}'
           composer update --lock
           git config --global user.name "GitHub Actions"
