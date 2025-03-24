@@ -43,7 +43,7 @@ jobs:
         with:
           repository: ${{ inputs.target_repo }}
           path: target-repo
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.target_repo_token }}
           ref: ${{ inputs.branch }}
 
       # Step 4: Update composer.json
