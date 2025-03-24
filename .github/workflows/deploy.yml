@@ -4,48 +4,42 @@ on:
   push:
     branches:
       - main
-      - testing-gra  # Trigger on push to the main branch of gra_modules
+      - testing-gra  
 
 jobs:
   update-composer-lock:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout gra_modules repository
       - name: Checkout gra_modules Repository
         uses: actions/checkout@v3
         with:
-          repository: sangeethdharsan/gra_modules  # Replace with your gra_modules repo
-          token: ${{ secrets.PAT }}  # Use PAT for private repos
-          ref: testing-gra  # Specify the branch explicitly
+          repository: sangeethdharsan/gra_modules  # Replace with your child repo
+          token: ${{ secrets.PAT }}  # Use github token
+          ref: testing-gra  # Specify the branch 
 
-      # Step 2: Get the commit SHA of gra_modules
       - name: Get Commit SHA
         id: get-commit-sha
         run: echo "COMMIT_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
-      # Step 3: Checkout gra_2 repository
       - name: Checkout gra_2 Repository
         uses: actions/checkout@v3
         with:
-          repository: sangeethdharsan/gra_2  # Replace with your gra_2 repo
+          repository: sangeethdharsan/gra_2  # Replace with your parent repo
           path: gra_2
-          token: ${{ secrets.PAT }}  # Use PAT for private repos
-          ref: test  # Specify the branch explicitly
+          token: ${{ secrets.PAT }}  # Use github token
+          ref: test  # Specify the branch
 
-      # Step 4: Update composer.json in gra_2 to reference the latest commit from gra_modules
       - name: Update composer.json in gra_2
         run: |
           cd gra_2
           composer config repositories.gra_modules '{"type": "git", "url": "https://github.com/sangeethdharsan/gra_modules.git", "reference": "${{ env.COMMIT_SHA }}"}'
 
-      # Step 5: Update composer.lock in gra_2
       - name: Update Composer Lock
         run: |
           cd gra_2
           composer update gratest/codingstandard-php --with-all-dependencies
 
-      # Step 6: Commit and push changes to gra_2
       - name: Commit and Push Changes
         run: |
           cd gra_2
