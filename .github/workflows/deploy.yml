@@ -1,69 +1,53 @@
-name: Reusable - Update Composer Lock
+name: Reusable Composer Update
 
 on:
   workflow_call:
     inputs:
-      source_repo:
-        required: true
-        type: string
       target_repo:
         required: true
         type: string
-      package_name:
-        required: true
-        type: string
-      branch:
+      target_branch:
         required: false
         type: string
-        default: 'main'
+        default: 'reusable-gra'
+      package_name:
+        required: false
+        type: string
+        default: 'gratest/codingstandard-php'
+      source_sha:
+        required: true
+        type: string
     secrets:
-      target_repo_token:
+      target_token:
         required: true
 
 jobs:
-  update-composer-lock:
+  update-composer:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Checkout source repository
-      - name: Checkout Source Repository
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ inputs.source_repo }}
-          token: ${{ secrets.target_repo_token }}
-          ref: ${{ inputs.branch }}
-
-      # Step 2: Get Commit SHA
-      - name: Get Commit SHA
-        id: get-commit-sha
-        run: echo "COMMIT_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
-
-      # Step 3: Checkout target repository
-      - name: Checkout Target Repository
+      - name: Checkout target repository
         uses: actions/checkout@v4
         with:
           repository: ${{ inputs.target_repo }}
           path: target-repo
-          token: ${{ secrets.target_repo_token }}
-          ref: ${{ inputs.branch }}
+          token: ${{ secrets.target_token }}
+          ref: ${{ inputs.target_branch }}
 
-      # Step 4: Update composer.json
-      - name: Update composer.json
+      - name: Update composer reference
         run: |
           cd target-repo
-          composer config repositories.source_repo '{"type": "git", "url": "https://github.com/${{ inputs.source_repo }}.git", "reference": "${{ env.COMMIT_SHA }}"}'
-
-      # Step 5: Update composer.lock
-      - name: Update Composer Lock
-        run: |
-          cd target-repo
+          composer config repositories.source-repo '{
+            "type": "git",
+            "url": "https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}.git",
+            "reference": "${{ inputs.source_sha }}"
+          }'
           composer update ${{ inputs.package_name }} --with-all-dependencies
 
-      # Step 6: Commit and push
-      - name: Commit and Push Changes
+      - name: Commit and push changes
         run: |
           cd target-repo
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add composer.lock
-          git commit -m "Update composer.lock with ${{ inputs.source_repo }} commit ${{ env.COMMIT_SHA }}"
-          git push origin ${{ inputs.branch }}
+          git commit -m "Update ${{ inputs.package_name }} to ${{ github.repository_owner }}/${{ github.event.repository.name }}@${{ inputs.source_sha }}"
+          git push
