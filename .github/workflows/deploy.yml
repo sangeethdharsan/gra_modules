@@ -36,6 +36,7 @@ jobs:
       - name: Update composer reference
         run: |
           cd target-repo
+          ls -ltrh
           composer config repositories.source-repo '{
             "type": "git",
             "url": "https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}.git",
