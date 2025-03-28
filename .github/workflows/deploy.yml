@@ -1,54 +1,40 @@
-name: Reusable Composer Update
+name: Trigger Dependency Updates
 
 on:
-  workflow_call:
-    inputs:
-      target_repo:
-        required: true
-        type: string
-      target_branch:
-        required: false
-        type: string
-        default: 'reusable-gra'
-      package_name:
-        required: false
-        type: string
-        default: 'gratest/codingstandard-php'
-      source_sha:
-        required: true
-        type: string
-    secrets:
-      target_token:
-        required: true
+  push:
+    branches: 
+      - main
+      - testing-gra
+      - reusable-gra
+    paths:
+      - 'composer.json'
+      - 'composer.lock'
 
 jobs:
-  update-composer:
+  trigger-updates:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout target repository
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ inputs.target_repo }}
-          path: target-repo
-          token: ${{ secrets.target_token }}
-          ref: ${{ inputs.target_branch }}
-
-      - name: Update composer reference
+      - name: Trigger updates in dependent repos
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
         run: |
-          cd target-repo
-          ls -ltrh
-          composer config repositories.source-repo '{
-            "type": "git",
-            "url": "https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}.git",
-            "reference": "${{ inputs.source_sha }}"
-          }'
-          composer update ${{ inputs.package_name }} --with-all-dependencies
-
-      - name: Commit and push changes
-        run: |
-          cd target-repo
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add composer.lock
-          git commit -m "Update ${{ inputs.package_name }} to ${{ github.repository_owner }}/${{ github.event.repository.name }}@${{ inputs.source_sha }}"
-          git push
+          # List of repos to update
+          repos=("sangeethdharsan/gra_2")
+          
+          for repo in "${repos[@]}"; do
+            echo "Triggering update in $repo"
+            
+            curl -L \
+              -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/$repo/actions/workflows/update-dependencies.yml/dispatches" \
+              -d '{
+                "ref":"main",
+                "inputs":{
+                  "source_repo":"${{ github.repository }}",
+                  "source_sha":"${{ github.sha }}"
+                }
+              }'
+          done
