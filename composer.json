@@ -30,8 +30,7 @@
     "require": {
         "launchdarkly/server-sdk": "^6.4",
         "symfony/finder": "*",
-        "guzzlehttp/guzzle": "^7.9",
-        "laravel/tinker": "^2.10"
+        "guzzlehttp/guzzle": "^7.9"
     },
     "config": {
         "allow-plugins": {
