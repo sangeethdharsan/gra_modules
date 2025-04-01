@@ -1,4 +1,4 @@
-name: Reusable: Update Parent Repo
+name: Reusable Update Parent Repo
 
 on:
   workflow_call:
