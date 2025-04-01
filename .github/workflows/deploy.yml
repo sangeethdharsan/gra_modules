@@ -2,8 +2,12 @@ name: Trigger Parent Update
 
 on:
   push:
-    branches: [main, testing-gra]
-    paths: ['composer.json', 'composer.lock']
+    branches: 
+      - main
+      - reusable-gra
+    paths: 
+      - 'composer.json'
+      - 'composer.lock'
 
 jobs:
   notify-parent:
